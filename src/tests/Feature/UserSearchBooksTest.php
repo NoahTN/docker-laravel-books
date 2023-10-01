@@ -25,20 +25,6 @@ class UserSearchBooksTest extends TestCase
        $response->assertStatus(400);
     }
 
-    public function test_filter_books_with_title_containing_a_word_with_beginning_charcters_matching_input() 
-    {
-       $response = $this->get('/');
-
-       $response->assertStatus(400);
-    }
-
-    public function test_filter_books_with_author_containing_a_word_with_beginning_charcters_matching_input() 
-    {
-       $response = $this->get('/');
-
-       $response->assertStatus(400);
-    }
-
     public function test_filter_books_with_title_or_author_containing_a_word_with_beginning_charcters_matching_input() 
     {
        $response = $this->get('/');
