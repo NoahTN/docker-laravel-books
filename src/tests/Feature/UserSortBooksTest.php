@@ -29,7 +29,7 @@ class UserSortBooksTest extends TestCase
         $response->assertStatus(400);
     }
     
-    public function test_display_books_sortedy_by_author_descending() 
+    public function test_display_books_sorted_alphabetically_by_author_descending() 
     {  
         $response = $this->get('/');
 
