@@ -6,57 +6,60 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class AddBookTest extends TestCase
+class UserAddBookTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function testExample()
+
+    public function test_reject_adding_book_with_no_title_and_no_author() 
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertStatus(400);
     }
 
-    public function testRejectAddingBookWithNoTitleAndNoAuthor() {
+    public function ttest_reject_adding_book_wit_author_but_no_title() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectAddingBookWitAuthorButNoTitle() {
+    public function test_reject_adding_book_with_title_but_no_author() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectAddingBookWithTitleButNoAuthor() {
+    public function test_reject_adding_book_with_existing_title_and_existing_author() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectAddingBookWithExistingTitleAndExistingAuthor() {
+    public function testAllowAddingBookWithExistingTitleButDifferentAuthor() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testAllowAddingBookWithExistingTitleButDifferentAuthor() {
+    public function test_allow_adding_book_with_existing_title_but_different_author() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testAllowAddingBookWithExistingAUthorButDifferentTitle() {
+    public function test_reject_adding_book_with_title_longer_than_100_characters() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectAddingBookWithTitleLongerThan100Characters() {
+    public function test_reject_adding_book_with_author_longer_than_100_characters() 
+    {
         $response = $this->get('/');
 
         $response->assertStatus(400);

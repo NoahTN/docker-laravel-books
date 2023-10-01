@@ -6,17 +6,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class DeleteBookTest extends TestCase
+class UserDeleteBookTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    public function test_delete_book()
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertStatus(400);
     }
 }
