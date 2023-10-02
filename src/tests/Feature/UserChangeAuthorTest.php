@@ -22,21 +22,21 @@ class UserChangeAuthorTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function testRejectChangeAuthorWith0Characters() 
+    public function test_reject_change_author_with_no_characters() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectChangeAuthorGreaterThan100Characters() 
+    public function test_reject_change_author_greater_than_100_characters() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function testRejectChangeAuthorToExistingAuthorWWhenSameTitle() 
+    public function test_reject_change_author_to_existing_author_when_same_title() 
     {
         $response = $this->get('/');
 
