@@ -51,14 +51,14 @@ class UserAddBookTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function test_reject_adding_book_with_title_longer_than_100_characters() 
+    public function test_reject_adding_book_with_title_longer_than_255_characters() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function test_reject_adding_book_with_author_longer_than_100_characters() 
+    public function test_reject_adding_book_with_author_longer_than_255_characters() 
     {
         $response = $this->get('/');
 
