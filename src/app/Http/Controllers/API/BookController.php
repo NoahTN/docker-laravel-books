@@ -12,12 +12,12 @@ use Illuminate\Http\JsonResponse;
 class BookController extends Controller
 {
     /**
-     * Used to get all book data
+     * Used to get all books
      * 
      * @param  \Illuminate\Http\Request  $request 
      * @return Illuminate\Http\JsonResponse
      */
-    public function getAllBookData(Request $request): JsonResponse
+    public function getAllBooks(Request $request): JsonResponse
     {
         $bookData = Book::all();
 
@@ -44,7 +44,7 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request 
      * @return Illuminate\Http\JsonResponse
      */
-    public function addBookData(Request $request): JsonResponse
+    public function addBook(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'book_title' => 'required|max:255',
@@ -83,6 +83,38 @@ class BookController extends Controller
             return response()->json([
                 'code' => 400,
                 'message' => "Book with Title and Author already exists"
+            ]);
+        }
+    }
+
+    /**
+     * Used to search for books by title or author
+     * 
+     * @param  \Illuminate\Http\Request  $request 
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function getBooksByQuery(Request $request, string $query): JsonResponse
+    {
+        $bookData = Book::where('title', 'like', $query . '%')
+                        ->orWhere('title', 'like', '% ' . $query . '%')
+                        ->orWhere('author', 'like', $query . '%')
+                        ->orWhere('author', 'like', '% ' . $query . '%')
+                        ->get();
+
+
+        if(empty($bookData->count())) 
+        {
+            return response()->json([
+                'code' => 204,
+                'message' => 'No books found matching "' . $query . '"',
+            ]);
+        }  
+        else
+        {
+            return response()->json([
+                'code' => 200,
+                'message' => 'Found book(s) matching "' . $query . '"',  
+                'data' => $bookData
             ]);
         }
     }
