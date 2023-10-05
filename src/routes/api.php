@@ -23,5 +23,5 @@ Route::get('books/search/{query?}/{orderBy?}/{order?}', [BookController::class, 
 Route::get('books/{orderBy?}/{order?}', [BookController::class, 'getAllBooks']);
 Route::post('books/add', [BookController::class, 'addBook']);
 Route::delete('books/{id}', [BookController::class, 'deleteBook']);
-Route::put('update-book-author/{d}', [BookController::class, 'updateBookAuthor']);
+Route::put('books/author', [BookController::class, 'updateBookAuthor']);
 
