@@ -1,31 +1,31 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Browser;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
-class UserExportTest extends TestCase
+class UserExportTest extends DuskTestCase
 {
     // test for each: Include Titles and Authors, Include Only Titles, Include only Authors
     
-    public function test_export_csv_no_data() 
+    public function test_exportCSV_noData_reject() 
     {
       $this->assertTrue(false);
     }
 
-    public function test_export_XML_no_data() 
+    public function test_exportCSV_data_succeed() 
     {
       $this->assertTrue(false);
     }
 
-    public function test_export_CSV_with_data() 
+    public function test_exportXML_noData_reject() 
     {
       $this->assertTrue(false);
     }
 
-    public function test_export_XML_with_data() 
+    public function test_exportXML_data_succeed() 
     {
       $this->assertTrue(false);
     }

@@ -1,42 +1,42 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Browser;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
-class UserChangeAuthorTest extends TestCase 
+class UserChangeAuthorTest extends DuskTestCase 
 {
-    public function test_allow_change_author_no_text_change() 
+    public function test_changeAuthor_noChange_succeed() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function test_change_author() 
+    public function test_changeAuthor_newAuthor_succeed() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function test_reject_change_author_with_no_characters() 
+    public function test_changeAuthor_noText_reject() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function test_reject_change_author_greater_than_100_characters() 
+    public function test_changeAuthor_authorLongerThan255Characters_reject() 
     {
         $response = $this->get('/');
 
         $response->assertStatus(400);
     }
 
-    public function test_reject_change_author_to_existing_author_when_same_title() 
+    public function test_changeAuthor_existingTitleAndAuthor_reject() 
     {
         $response = $this->get('/');
 

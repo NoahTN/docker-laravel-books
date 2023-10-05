@@ -118,6 +118,10 @@
                         <th>Author</th>
                         <th>Delete</th>
                     </tr>
+                    @foreach($books as $book)
+                        @component('components.row-item', ['title' => $book->title, 'author' => $book->author])
+                        @endcomponent
+                    @endforeach
                 </table>
             </div>
         </div>
