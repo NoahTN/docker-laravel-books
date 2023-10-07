@@ -62,6 +62,10 @@
                 margin-bottom: 30px;
             }
 
+            #form-add {
+                display: flex;
+                flex-direction: row;
+            }
 
             .input-container {
                 display: flex;
@@ -99,18 +103,40 @@
                 <div class="title m-b-md">
                     Laravel
                 </div>
-
-                <div class="form-add">
-                    <div class="input-container">
-                        <p class="required-field">Title</p>
-                        <input />
-                    </div>
-                    <div class="input-container">
-                        <p class="required-field">Author</p>
-                        <input />
-                    </div>
-                    <button>Add</button>
+                <div>
+                    <input />
+                    <select>
+                        <option value="none" selected>Sort by</option>
+                        <option value="title-asc">Title, ASC</option>
+                        <option value="title-desc">Title, DESC</option>
+                        <option value="author-asc">Author, ASC</option>
+                        <option value="author-desc">Author, DESC</option>
+                    </select>
                 </div>
+
+                <form id="form-add">
+                    @csrf
+                    <div class="input-container">
+                        <label for="title" class="required-field">Title</label>
+                        <input required name="title" title="A title is required"/>
+                    </div>
+                    <div class="input-container">
+                        <label for="author" class="required-field">Author</label>
+                        <input required name="author" title="An author is required"/>
+                    <button id="add-book">Add Book</button>
+                    <script type="text/javascript">
+                        document.getElementById("add-book").addEventListener('click', async () => {
+                            let res = await fetch("/api/books/add", {
+                                method: "POST",
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                }
+                            });
+                        });
+                    </script>
+                    </div>
+                </form>
 
                 <table>
                     <tr>
@@ -123,7 +149,6 @@
                         @endcomponent
                     @endforeach
                 </table>
-            </div>
         </div>
     </body>
 </html>

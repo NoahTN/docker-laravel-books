@@ -8,14 +8,20 @@ use Tests\DuskTestCase;
 
 class UserAddBookTest extends DuskTestCase
 {
+    use RefreshDatabase;
 
+
+    /**
+     * It prevents the user from adding a book with no title and no author
+     */
     public function test_addBook_noTitleNoAuthor_reject() 
     {
-        $response = $this->get('/');
-        $response->assertSee([
-                '<table>',
-                '</table>'
-            ], false);
+        $this->browse(function ($browser) {
+            $browser->visit('http://localhost')
+                ->press('Add Book')
+                ->waitForText("Missing title")
+                ->waitForText("Missing author");
+        });
     }
 
     public function test_addBook_noTitleAuthor_reject() 
