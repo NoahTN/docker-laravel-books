@@ -1,0 +1,37 @@
+#content-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5em;
+}
+
+table {
+    width: 50%;
+    border-collapse: separate;
+    border-spacing: 0px;
+    border: 1px solid lightgrey;
+
+    th, td {
+        border: 1px solid lightgrey;
+        text-align: left;
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
+    tr {
+        box-sizing: border-box;
+    }
+
+    th:nth-child(1) {
+        width: 60%;
+    }
+    
+    th:nth-child(2) {
+        width: 30%;
+    }
+    
+    th:nth-child(3) {
+        width: 10%;
+    }
+}
+

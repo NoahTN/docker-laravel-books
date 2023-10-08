@@ -1,42 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import AddItemContainer from './AddItemContainer';
 import SearchContainer from './SearchContainer';
 import RowItem from './RowItem';
+import '../../sass/main.scss';
 
 function Main() {
     const [books, setBooks] = useState(null);
-    const [query, setQuery] = useState("");
-    const [sortBy, setSoryBy] = useState(["", ""]);
+    const query = useRef("");
+    const sortBy = useRef(["", ""]);
+    const [addWarning, setAddWarning] = useState("");
 
     useEffect(() => {
         async function prepare() {
             let res = await fetch("/api/books");
             if(res.status === 200) {
                 let json = await res.json();
-                setBooks(json.data);
+                setBooks(json.data ?? []);
             }
         }
 
         prepare();
     }, []);
 
-    useEffect(() => {
-        throttle(async () => {
-            let res = await fetch("/api/books/search/" + query + sortBy[0] + "/" + sortBy[1]);
-            let json = await res.json();
-            setBooks(json?.data);
-        }, 1000)();
-    }, [query, sortBy]);
 
-
-    function throttle(func, delay) {
-        let timer;
-        return function(...args) {
-           clearTimeout(timer);
-           timer = setTimeout(() => func.apply(this, args), delay);
-        }
-     }
+    async function sendSortedSearchQuery() {
+        let res = await fetch("/api/books/search?query=" + query.current + "&orderBy=" + sortBy.current[0] + "&order=" + sortBy.current[1]);
+        let json = await res.json();
+        setBooks(json?.data);
+    }
 
     async function handleAddBook(book) {
         let res = await fetch("/api/books/add", {
@@ -47,9 +39,12 @@ function Main() {
             },
             body: JSON.stringify(book)
         });
+        let json = await res.json();
         if(res.status === 200) {
-            let json = await res.json();
-            setBooks([json.data].concat(...books));
+            sendSortedSearchQuery();
+        }
+        else if(res.status >= 400) {
+            setAddWarning(json.message);
         }
     }
 
@@ -62,35 +57,39 @@ function Main() {
             },
         });
         if(res.status === 200) {
-            let json = await res.json();
-            console.log(json);
-            setBooks([...books].filter(b => b.id !== id));
+            sendSortedSearchQuery();
         }
     }
 
-    async function handleSearchChange(e) {
-        setQuery(e.target.value);
+    function handleSearchChange(e) {
+       query.current = e.target.value;
+       sendSortedSearchQuery();
     }
 
     function handleSortChange(e) {
-        let val = e.target.value.split(", ");
-        setSoryBy([val[0].toLowerCase(), val[1]])
+        let val = e.target.value.split("-");
+        sortBy.current = val ? [val[0], val[1].toUpperCase()] : ["", ""];
+        sendSortedSearchQuery();
     }
 
 
-    return <div>
-        <AddItemContainer handleAddBook={handleAddBook}/>
+    return <div id="content-body">
+        <AddItemContainer handleAddBook={handleAddBook} setAddWarning={setAddWarning}/>
+        {addWarning ? <p id="warning-add">{addWarning}</p> : null}
         <SearchContainer handleSearchChange={handleSearchChange} handleSortChange={handleSortChange} />
         <table>
             <thead>
                 <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th></th>
+                    <th id='col-title'>Title</th>
+                    <th id='col-author'>Author</th>
+                    <th id='col-delete'>Delete</th>
                 </tr>
             </thead>
+            
             <tbody>
-                {books ? books.map(b => <RowItem key={b.title+"_"+b.author} book={b} handleDeleteBook={handleDeleteBook} />) : null}
+                {books ? books.map((b, i) => <RowItem key={b.title+"_" + i + "_"+b.author} book={b} handleDeleteBook={handleDeleteBook} />) : (query.current ? 
+                    <div>No books matching "{query.current}" found</div>
+                : null)}
             </tbody>
         </table>
     </div>;

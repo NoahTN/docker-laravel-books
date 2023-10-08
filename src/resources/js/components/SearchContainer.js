@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import '../../sass/searchContainer.scss';
 
 function SearchContainer(props) {
-    return <div>
+    return <div id="search-container">
         <input name="query" onChange={props.handleSearchChange}/>
         <select onChange={props.handleSortChange}>
             <option value="none" defaultValue>Sort by</option>

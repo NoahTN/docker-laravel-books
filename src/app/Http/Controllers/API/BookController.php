@@ -32,8 +32,8 @@ class BookController extends Controller
         else
         {
             return response()->json([
-                'message' => 'Succeeded, but no books exist in database',
-            ], 204);
+                'message' => 'No books found',
+            ], 200);
         }
     }
 
@@ -47,7 +47,7 @@ class BookController extends Controller
     {
         $orderBy = $request->get('orderBy');
         $order = $request->get('order');
-
+        
         $validator = Validator::make(['orderBy' => $orderBy, 'order' => $order], [
             'orderBy' => 'nullable|max:255|in:title,author',
             'order' => 'nullable|max:255|in:ASC,DESC'
@@ -85,7 +85,7 @@ class BookController extends Controller
         {
             return response()->json([
                 'message' => 'Failed to find books matching "' . $query . '"'
-            ], 204);
+            ], 200);
         }  
         else
         {

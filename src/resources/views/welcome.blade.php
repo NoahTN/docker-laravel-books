@@ -62,20 +62,7 @@
                 margin-bottom: 30px;
             }
 
-            #form-add {
-                display: flex;
-                flex-direction: row;
-            }
-
-            .input-container {
-                display: flex;
-                flex-direction: row;
-            }
-
-            .required-field::after {
-                content: "*";
-                color: red;
-            }
+            
 
             tr {
                

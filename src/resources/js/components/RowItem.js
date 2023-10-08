@@ -6,7 +6,7 @@ function RowItem(props) {
     useEffect(() => {
     }, []);
 
-    return <tr>
+    return <tr className="row-item">
         <td>{props.book.title}</td>
         <td>{props.book.author}</td>
         <td>

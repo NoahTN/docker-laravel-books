@@ -2,75 +2,62 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class UserAddBookTest extends DuskTestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
 
     /**
-     * It prevents the user from adding a book with no title and no author
+     * It fails in adding a book to the database and notifies the user that duplicate title and author exists
      */
-    public function test_addBook_noTitleNoAuthor_reject() 
+    public function test_addBook_existingTitleAndAuthor_reject() 
     {
         $this->browse(function ($browser) {
             $browser->visit('http://localhost')
+                ->type("title", "Test Book")
+                ->type("author", "An Author")
                 ->press('Add Book')
-                ->waitForText("Missing title")
-                ->waitForText("Missing author");
+                ->waitFor(".row-item")
+                ->press('Add Book')
+                ->waitFor("#warning-add")
+                ->assertSeeIn("#warning-add", "Failed to add book, \"Test Book\" by \"An Author\" already exists");
         });
-    }
-
-    public function test_addBook_noTitleAuthor_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
-    public function test_addBook_titleNoAuthor_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
-    public function test_addBook_existingTitleAndAuthor_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
     }
 
     public function test_addBook_existingTitleDifferentAuthor_succeed() 
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
+        $this->browse(function ($browser) {
+            $browser->visit('http://localhost')
+                    ->type("title", "Test Book")
+                    ->type("author", "An Author")
+                    ->press('Add Book')
+                    ->waitFor(".row-item")
+                    ->type("author", "Another Author")
+                    ->press('Add Book')
+                    ->whenAvailable('tr:nth-child(2)', function ($row) {
+                        $row->assertSee('Another Author');
+                    });
+        });
     }
 
     public function test_addBook_differentTitleExistingAuthor_succeed() 
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
-    public function test_addBook_titleLongerThan255Characters_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
-    public function test_addBook_authorLongerThan255Characters_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
+        $this->browse(function ($browser) {
+            $browser->visit('http://localhost')
+                    ->type("title", "Test Book")
+                    ->type("author", "An Author")
+                    ->press('Add Book')
+                    ->waitFor(".row-item")
+                    ->type("title", "Another Book")
+                    ->press('Add Book')
+                    ->whenAvailable('tr:nth-child(2)', function ($row) {
+                        $row->assertSee('Another Book');
+                    });
+        });
     }
 
 }

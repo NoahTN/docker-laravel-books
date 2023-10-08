@@ -127,6 +127,19 @@ class BookTest extends TestCase
             );
     }
 
+    /**
+     *  It returns no books when no matches are found
+     */
+    public function test_getBooksByQuery_populatedNoMatches_noBooks() {
+        $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers');
+        $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
+        $this->addBook('How To Draw Comics The Marvel Way', 'Stan Lee, John Buscema');
+
+        $this->get('/api/books/search?query=Cooking')
+            ->assertJson([
+                'message' => 'Failed to find books matching "Cooking"',
+            ]);
+    }
 
     /**
      *  It gets all the books that have a title or author containing a word that starts with the query

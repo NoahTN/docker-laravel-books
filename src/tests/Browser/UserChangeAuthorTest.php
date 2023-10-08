@@ -22,20 +22,6 @@ class UserChangeAuthorTest extends DuskTestCase
         $response->assertStatus(400);
     }
 
-    public function test_changeAuthor_noText_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
-    public function test_changeAuthor_authorLongerThan255Characters_reject() 
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(400);
-    }
-
     public function test_changeAuthor_existingTitleAndAuthor_reject() 
     {
         $response = $this->get('/');
