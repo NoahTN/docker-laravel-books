@@ -11,9 +11,6 @@
 |
 */
 
-use App\Models\Book;
-
 Route::get('/', function () {
-    $books = Book::all();
-    return view('welcome')->with('books', $books);
+    return view('welcome');
 });

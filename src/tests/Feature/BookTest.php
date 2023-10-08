@@ -13,12 +13,7 @@ class BookTest extends TestCase
 
     private function addBook(string $title, string $author): object
     {
-        $payload = [
-            'book_title' => $title,
-            'book_author' => $author
-        ];
-
-        return $this->json('POST', 'api/books/add', $payload);
+        return $this->json('POST', 'api/books/add', compact($title, $author));
     }
 
     /**

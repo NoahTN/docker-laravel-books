@@ -84,71 +84,7 @@
         </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-                <div>
-                    <input />
-                    <select>
-                        <option value="none" selected>Sort by</option>
-                        <option value="title-asc">Title, ASC</option>
-                        <option value="title-desc">Title, DESC</option>
-                        <option value="author-asc">Author, ASC</option>
-                        <option value="author-desc">Author, DESC</option>
-                    </select>
-                </div>
-
-                <form id="form-add">
-                    @csrf
-                    <div class="input-container">
-                        <label for="title" class="required-field">Title</label>
-                        <input required name="title" title="A title is required"/>
-                    </div>
-                    <div class="input-container">
-                        <label for="author" class="required-field">Author</label>
-                        <input required name="author" title="An author is required"/>
-                    <button id="add-book">Add Book</button>
-                    <script type="text/javascript">
-                        document.getElementById("add-book").addEventListener('click', async () => {
-                            let res = await fetch("/api/books/add", {
-                                method: "POST",
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json',
-                                }
-                            });
-                        });
-                    </script>
-                    </div>
-                </form>
-
-                <table>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Delete</th>
-                    </tr>
-                    @foreach($books as $book)
-                        @component('components.row-item', ['title' => $book->title, 'author' => $book->author])
-                        @endcomponent
-                    @endforeach
-                </table>
-        </div>
+            <div id="root"></div>
+            <script src = "{{mix('js/app.js')}}"></script>
     </body>
 </html>

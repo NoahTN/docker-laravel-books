@@ -124,8 +124,8 @@ class BookController extends Controller
     public function addBook(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'book_title' => 'required|max:255',
-            'book_author' => 'required|max:255'
+            'title' => 'required|max:255',
+            'author' => 'required|max:255'
         ]);
 
         if($validator->fails()) {
@@ -136,13 +136,13 @@ class BookController extends Controller
             ]);
         }
 
-        $existingBook = Book::where('title', $request->book_title)
-                            ->where('author', $request->book_author)
+        $existingBook = Book::where('title', $request->title)
+                            ->where('author', $request->uthor)
                             ->first();
         if(!$existingBook) {
             $bookData = new Book();
-            $bookData->title = $request->book_title;
-            $bookData->author = $request->book_author;
+            $bookData->title = $request->title;
+            $bookData->author = $request->author;
             $bookData->save();
             if($bookData->id > 0) {
                 return response()->json([
@@ -161,7 +161,7 @@ class BookController extends Controller
         else {
             return response()->json([
                 'code' => 400,
-                'message' => 'Failed to add book, "'. $request->book_title .'" by "'. $request->book_author .'" already exists'
+                'message' => 'Failed to add book, "'. $request->title .'" by "'. $request->author .'" already exists'
             ]);
         }
     }
