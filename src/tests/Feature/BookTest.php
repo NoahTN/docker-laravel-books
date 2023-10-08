@@ -13,7 +13,7 @@ class BookTest extends TestCase
 
     private function addBook(string $title, string $author): object
     {
-        return $this->json('POST', 'api/books/add', compact($title, $author));
+        return $this->json('POST', 'api/books/add', compact('title', 'author'));
     }
 
     /**
@@ -22,7 +22,6 @@ class BookTest extends TestCase
     public function test_addBook_single_success() {
         $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers')
             ->assertJson([
-                'code' => '200',
                 'message' => 'Successfully added book',
                 'data' => [
                     'title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure',
@@ -38,7 +37,6 @@ class BookTest extends TestCase
         $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers');
         $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers')
             ->assertJson([
-                'code' => '400',
                 'message' => 'Failed to add book, "Japanese the Manga Way: An Illustrated Guide to Grammar and Structure" by "Wayne P. Lammers" already exists'
             ]);
     }
@@ -52,7 +50,6 @@ class BookTest extends TestCase
                     ->getData()->data;
         $this->json('DELETE', '/api/books/' . $book->id)
             ->assertJson([
-                'code' => 200,
                 'message' => 'Successfully deleted book with id: ' . $book->id
             ]);
     }
@@ -64,7 +61,6 @@ class BookTest extends TestCase
     {
         $this->json('DELETE', '/api/books/' . 10)
         ->assertJson([
-            'code' => 400,
             'message' => 'Failed to delete book with id: 10'
         ]);
     }
@@ -84,7 +80,6 @@ class BookTest extends TestCase
 
         $this->json('PUT', '/api/books/author', $payload)
             ->assertJson([
-                'code' => 200,
                 'message' => 'Successfully updated book with id: '. $book->id .' to author: "Lammers P. Wayne"'
             ]);
     }
@@ -104,7 +99,6 @@ class BookTest extends TestCase
 
         $this->json('PUT', '/api/books/author', $payload)
             ->assertJson([
-                'code' => 400,
                 'message' => 'The new author field is required'
             ]);
     }
@@ -121,7 +115,6 @@ class BookTest extends TestCase
         $this->get('/api/books')
             ->assertJsonStructure(
                 [
-                    'code',
                     'message',
                     'data' => [
                         '*' => [
@@ -146,9 +139,8 @@ class BookTest extends TestCase
         $this->addBook('Voices In the Park', 'Anthony Browne');
         $this->addBook('A Nonexistant Book', 'Browne Anthony');
 
-        $this->get('/api/books/search/' . 'An')
+        $this->get('/api/books/search?query=An')
             ->assertJson([
-                'code' => 200,
                 'message' => 'Successfully found books matching "An"',
                 'data' => [
                     ['title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure'],
@@ -168,9 +160,8 @@ class BookTest extends TestCase
         $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
-        $this->get('/api/books/title/ASC')
+        $this->get('/api/books/search?orderBy=title&order=ASC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Basic Human Anatomy: An Essential Visual Guide for Artists'],
                     ['title' => 'How To Draw Comics The Marvel Way 1'],
@@ -189,9 +180,8 @@ class BookTest extends TestCase
         $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
-        $this->get('/api/books/title/DESC')
+        $this->get('/api/books/search?orderBy=title&order=DESC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -210,9 +200,8 @@ class BookTest extends TestCase
         $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
-        $this->get('/api/books/author/ASC')
+        $this->get('/api/books/search?orderBy=author&order=ASC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Basic Human Anatomy: An Essential Visual Guide for Artists'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -231,9 +220,8 @@ class BookTest extends TestCase
         $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
-        $this->get('/api/books/author/DESC')
+        $this->get('/api/books/search?orderBy=author&order=DESC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -252,9 +240,8 @@ class BookTest extends TestCase
         $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
-        $this->get('/api/books/search/the/title/ASC')
+        $this->get('/api/books/search?query=the&orderBy=title&order=ASC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'How To Draw Comics The Marvel Way 1'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -273,9 +260,8 @@ class BookTest extends TestCase
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
 
-        $this->get('/api/books/search/the/title/DESC')
+        $this->get('/api/books/search?query=the&orderBy=title&order=DESC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -294,9 +280,8 @@ class BookTest extends TestCase
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
 
-        $this->get('/api/books/search/the/author/ASC')
+        $this->get('/api/books/search?query=the&orderBy=author&order=ASC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'How To Draw Comics The Marvel Way 1'],
                     ['title' => 'How To Draw Comics The Marvel Way 11'],
@@ -315,9 +300,8 @@ class BookTest extends TestCase
         $this->addBook('How To Draw Comics The Marvel Way 1', 'Stan Lee, John Buscema');
         $this->addBook('How To Draw Comics The Marvel Way 11', 'Stan Lee, John Buscema');
 
-        $this->get('/api/books/search/the/author/DESC')
+        $this->get('/api/books/search?query=the&orderBy=author&order=DESC')
             ->assertJson([
-                'code' => 200,
                 'data' => [
                     ['title' => 'Japanese the Manga Way: An Illustrated Guide to Grammar and Structure'],
                     ['title' => 'How To Draw Comics The Marvel Way 1'],

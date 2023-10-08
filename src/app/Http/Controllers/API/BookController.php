@@ -4,6 +4,7 @@ namespace App\http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Libraries\CommonHelper;
 use Validator;
 use App\Models\Book;
@@ -17,47 +18,22 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request 
      * @return Illuminate\Http\JsonResponse
      */
-    public function getAllBooks(Request $request, string $orderBy=null, string $order=null): JsonResponse
+    public function getAllBooks(Request $request): JsonResponse
     {   
-        $validator = Validator::make(compact('orderBy', 'order'), [
-            'orderBy' => 'nullable|max:255|in:title,author',
-            'order' => 'nullable|max:255|in:ASC,DESC'
-        ]);
-
-        if($validator->fails()) 
-        {
-            $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
-            return response()->json([
-                'code' => 400,
-                'message' => $customError
-            ]);
-        }
-        
-        $bookData = null;
-        if($orderBy) 
-        {
-            $bookData = Book::orderBy($orderBy, $order)
-                            ->get();
-        }
-        else 
-        {
-            $bookData = Book::all();
-        }
+        $bookData = Book::all();
         
         if(!empty($bookData->count())) 
         {
             return response()->json([
-                'code' => 200,
                 'message' => 'Succeeded in getting books',
                 'data' => $bookData
-            ]);
+            ], 200);
         }
         else
         {
             return response()->json([
-                'code' => 204,
                 'message' => 'Succeeded, but no books exist in database',
-            ]);
+            ], 204);
         }
     }
 
@@ -67,9 +43,12 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request 
      * @return Illuminate\Http\JsonResponse
      */
-    public function getBooksByQuery(Request $request, string $query, string $orderBy=null, string $order=null): JsonResponse
+    public function getBooksByQuery(Request $request): JsonResponse
     {
-        $validator = Validator::make(compact('orderBy', 'order'), [
+        $orderBy = $request->get('orderBy');
+        $order = $request->get('order');
+
+        $validator = Validator::make(['orderBy' => $orderBy, 'order' => $order], [
             'orderBy' => 'nullable|max:255|in:title,author',
             'order' => 'nullable|max:255|in:ASC,DESC'
         ]);
@@ -78,15 +57,19 @@ class BookController extends Controller
         {
             $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
             return response()->json([
-                'code' => 400,
                 'message' => $customError
-            ]);
+            ], 400);
         }
 
-        $bookData = Book::where('title', 'like', $query . '%')
-                        ->orWhere('title', 'like', '% ' . $query . '%')
-                        ->orWhere('author', 'like', $query . '%')
-                        ->orWhere('author', 'like', '% ' . $query . '%');
+        $bookData = DB::table('books');
+        $query = $request->get('query');
+        if($query) {
+                $bookData = $bookData->where('title', 'like', $query . '%')
+                ->orWhere('title', 'like', '% ' . $query . '%')
+                ->orWhere('author', 'like', $query . '%')
+                ->orWhere('author', 'like', '% ' . $query . '%');
+        }
+       
         if($orderBy) 
         {
             $bookData = $bookData->orderBy($orderBy, $order)
@@ -101,17 +84,15 @@ class BookController extends Controller
         if(empty($bookData->count())) 
         {
             return response()->json([
-                'code' => 204,
                 'message' => 'Failed to find books matching "' . $query . '"'
-            ]);
+            ], 204);
         }  
         else
         {
             return response()->json([
-                'code' => 200,
                 'message' => 'Successfully found books matching "' . $query . '"',  
                 'data' => $bookData
-            ]);
+            ], 200);
         }
     }
 
@@ -131,13 +112,12 @@ class BookController extends Controller
         if($validator->fails()) {
             $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
             return response()->json([
-                'code' => 400,
                 'message' => $customError
-            ]);
+            ], 400);
         }
 
         $existingBook = Book::where('title', $request->title)
-                            ->where('author', $request->uthor)
+                            ->where('author', $request->author)
                             ->first();
         if(!$existingBook) {
             $bookData = new Book();
@@ -146,23 +126,20 @@ class BookController extends Controller
             $bookData->save();
             if($bookData->id > 0) {
                 return response()->json([
-                    'code' => 200,
                     'message' => 'Successfully added book',
                     'data' => $bookData
-                ]);
+                ], 200);
             }
             else {
                 return response()->json([
-                    'code' => 400,
                     'message' => 'Failed to add book'
-                ]);
+                ], 400);
             }
         }
         else {
             return response()->json([
-                'code' => 400,
                 'message' => 'Failed to add book, "'. $request->title .'" by "'. $request->author .'" already exists'
-            ]);
+            ], 409);
         }
     }
 
@@ -180,16 +157,14 @@ class BookController extends Controller
         if($bookDeleted) 
         {
             return response()->json([
-                'code' => 200,
                 'message' => 'Successfully deleted book with id: ' . $id
-            ]);
+            ], 200);
         }  
         else
         {
             return response()->json([
-                'code' => 400,
                 'message' => 'Failed to delete book with id: ' . $id
-            ]);
+            ], 400);
         }
     }
 
@@ -209,9 +184,8 @@ class BookController extends Controller
         if($validator->fails()) {
             $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
             return response()->json([
-                'code' => 400,
                 'message' => $customError
-            ]);
+            ], 400);
         }
 
         $bookUpdated = Book::where('id', $request->id)
@@ -220,16 +194,14 @@ class BookController extends Controller
         if($bookUpdated) 
         {
             return response()->json([
-                'code' => 200,
                 'message' => 'Successfully updated book with id: ' . $request->id . ' to author: "' . $request->new_author . '"'
-            ]);
+            ], 200);
         }  
         else
         {
             return response()->json([
-                'code' => 400,
                 'message' => 'Failed to update book with id: ' . $request->id
-            ]);
+            ], 400);
         }
     }
 

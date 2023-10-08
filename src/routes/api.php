@@ -19,8 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('books/search/{query}/{orderBy?}/{order?}', [BookController::class, 'getBooksByQuery']);
-Route::get('books/{orderBy?}/{order?}', [BookController::class, 'getAllBooks']);
+Route::get('books/search', [BookController::class, 'getBooksByQuery']);
+Route::get('books', [BookController::class, 'getAllBooks']);
 Route::post('books/add', [BookController::class, 'addBook']);
 Route::delete('books/{id}', [BookController::class, 'deleteBook']);
 Route::put('books/author', [BookController::class, 'updateBookAuthor']);
