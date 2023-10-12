@@ -37,4 +37,22 @@ COPY --from=composer $LARAVEL_PATH $LARAVEL_PATH
 
 RUN chown -R www-data $LARAVEL_PATH/storage
 
+RUN COMPOSER_MEMORY_LIMIT=-1 composer require --dev laravel/dusk \
+    && php artisan dusk:install
+
+RUN apt-get install -y npm \
+    && apt-get install -y libxpm4 \
+    && apt-get install -y libxrender1 \
+    && apt-get install -y libgtk2.0-0 \
+    && apt-get install -y libnss3 \
+    && apt-get install -y libgconf-2-4 \
+    && apt-get install -y wget
+
+RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb \
+    && apt install -y /tmp/chrome.deb \
+    && rm /tmp/chrome.deb
+
+RUN COMPOSER_MEMORY_LIMIT=-1  composer require  --dev laravel/ui:^1.0 \
+    && php artisan ui react
+
 WORKDIR $LARAVEL_PATH
