@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import AddItemContainer from './AddItemContainer';
 import SearchContainer from './SearchContainer';
+import ExportContainer from './ExportContainer';
 import RowItem from './RowItem';
 import '../../sass/main.scss';
 
@@ -128,6 +129,7 @@ function Main() {
                 : null)}
             </tbody>
         </table>
+        <ExportContainer />
     </div>;
 }
 

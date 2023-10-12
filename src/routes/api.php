@@ -24,4 +24,5 @@ Route::get('books', [BookController::class, 'getAllBooks']);
 Route::post('books/add', [BookController::class, 'addBook']);
 Route::delete('books/{id}', [BookController::class, 'deleteBook']);
 Route::put('books/author', [BookController::class, 'updateBookAuthor']);
+Route::get('books/export', [BookController::class, 'exportBooks']);
 

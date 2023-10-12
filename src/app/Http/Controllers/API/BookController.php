@@ -224,11 +224,82 @@ class BookController extends Controller
                 'message' => 'Failed to update book with id: ' . $request->id .', duplicate entry found'
             ], 400);
         }
-
-        
     }
 
+    /**
+     * Used to export books in CSV or XML format
+     * 
+     * @param  \Illuminate\Http\Request  $request 
+     */
+    public function exportBooks(Request $request)
+    {
+        $format = $request->get('format');
+        $columns = $request->get('columns');
 
+        $validator = Validator::make(compact('format', "columns"), [
+            'format' => 'required|in:csv,xml',
+            'columns' => 'required|array'
+        ]);
+
+        if($validator->fails()) 
+        {
+            $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
+            return response()->json([
+                'message' => $customError
+            ], 400);
+        }
+
+        $bookData = Book::all();
+        $headers = [
+            'Content-Type' => 'text/' . $format . '; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="books.' . $format . '"',
+        ];
+        
+        $callback = function() use ($bookData, $format, $columns)
+        {
+            $handle = fopen('php://output', 'w');
+            if($format == 'csv') 
+            {
+                fputcsv($handle, $columns);
+                foreach ($bookData as $book) {
+                    if($columns == ["title"]) 
+                    {
+                        fputcsv($handle, [$book->title]);
+                    }
+                    else if($columns == ["author"])
+                    {
+                        fputcsv($handle, [$book->author]);
+                    }
+                    else
+                    {
+                        fputcsv($handle, [$book->title, $book->author]);
+                    }
+                }
+            }
+            else 
+            {
+                fwrite($handle, "<books>\n");
+                foreach ($bookData as $book) {
+                    $xml = "\t<book>\n";
+                    if(in_array('title', $columns)) 
+                    {
+                        $xml .= "\t\t<title>" . $book->title . "</title>\n";
+                    }
+                    if(in_array('author', $columns)) 
+                    {
+                        $xml .= "\t\t<author>" . $book->author . "</author>\n";
+                    }
+                    $xml .= "</book>\n";
+                    fwrite($handle, $xml);
+                }
+                fwrite($handle, "</books>");
+            }
+            fclose($handle);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+        
+    }
 
 
 }
