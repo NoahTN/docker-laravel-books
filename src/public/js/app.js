@@ -6303,6 +6303,25 @@ exports.push([module.i, "#content-body {\n  display: flex;\n  flex-direction: co
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./resources/sass/rowItem.scss":
+/*!************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./resources/sass/rowItem.scss ***!
+  \************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".column-author {\n  display: flex;\n  flex-direction: row;\n}\n\n.change-button {\n  margin-left: 1em;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./resources/sass/searchContainer.scss":
 /*!********************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./resources/sass/searchContainer.scss ***!
@@ -6315,7 +6334,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "#search-container {\n  margin-bottom: 0.5em;\n}", ""]);
 
 // exports
 
@@ -66397,7 +66416,7 @@ function AddItemContainer(props) {
     name: "title",
     title: "A title is required",
     onChange: function onChange() {
-      return props.setAddWarning(null);
+      return props.setMessage(null);
     }
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "input-container"
@@ -66408,7 +66427,7 @@ function AddItemContainer(props) {
     name: "author",
     title: "An author is required",
     onChange: function onChange() {
-      return props.setAddWarning(null);
+      return props.setMessage(null);
     }
   }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     id: "add-book"
@@ -66459,17 +66478,17 @@ function Main() {
     setBooks = _useState2[1];
   var query = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])("");
   var sortBy = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(["", ""]);
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])("Fetching books..."),
     _useState4 = _slicedToArray(_useState3, 2),
-    addWarning = _useState4[0],
-    setAddWarning = _useState4[1];
+    message = _useState4[0],
+    setMessage = _useState4[1];
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     function prepare() {
       return _prepare.apply(this, arguments);
     }
     function _prepare() {
       _prepare = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var res, _json$data, json;
+        var res, json;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -66477,16 +66496,17 @@ function Main() {
               return fetch("/api/books");
             case 2:
               res = _context.sent;
-              if (!(res.status === 200)) {
-                _context.next = 8;
-                break;
-              }
-              _context.next = 6;
+              _context.next = 5;
               return res.json();
-            case 6:
+            case 5:
               json = _context.sent;
-              setBooks((_json$data = json.data) !== null && _json$data !== void 0 ? _json$data : []);
-            case 8:
+              if (res.status === 200) {
+                setBooks((json === null || json === void 0 ? void 0 : json.data) || []);
+                setMessage("");
+              } else {
+                setMessage(res.message);
+              }
+            case 7:
             case "end":
               return _context.stop();
           }
@@ -66501,20 +66521,26 @@ function Main() {
   }
   function _sendSortedSearchQuery() {
     _sendSortedSearchQuery = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var res, json;
+      var onlyMessage, res, json;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            onlyMessage = false;
+            if (!message) {
+              setMessage("Fetching books...");
+              onlyMessage = true;
+            }
+            _context2.next = 4;
             return fetch("/api/books/search?query=" + query.current + "&orderBy=" + sortBy.current[0] + "&order=" + sortBy.current[1]);
-          case 2:
+          case 4:
             res = _context2.sent;
-            _context2.next = 5;
+            _context2.next = 7;
             return res.json();
-          case 5:
+          case 7:
             json = _context2.sent;
             setBooks(json === null || json === void 0 ? void 0 : json.data);
-          case 7:
+            setMessage("");
+          case 10:
           case "end":
             return _context2.stop();
         }
@@ -66531,27 +66557,36 @@ function Main() {
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
+            setMessage("Adding book...");
+            _context3.next = 3;
             return fetch("/api/books/add", {
-              method: "POST",
+              method: "post",
               headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
               },
               body: JSON.stringify(book)
             });
-          case 2:
+          case 3:
             res = _context3.sent;
-            _context3.next = 5;
+            _context3.next = 6;
             return res.json();
-          case 5:
+          case 6:
             json = _context3.sent;
-            if (res.status === 200) {
-              sendSortedSearchQuery();
-            } else if (res.status >= 400) {
-              setAddWarning(json.message);
+            if (!(res.status === 200)) {
+              _context3.next = 12;
+              break;
             }
-          case 7:
+            _context3.next = 10;
+            return sendSortedSearchQuery();
+          case 10:
+            _context3.next = 13;
+            break;
+          case 12:
+            if (res.status >= 400) {
+              setMessage(json.message);
+            }
+          case 13:
           case "end":
             return _context3.stop();
         }
@@ -66564,11 +66599,12 @@ function Main() {
   }
   function _handleDeleteBook() {
     _handleDeleteBook = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(id) {
-      var res;
+      var res, json;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
+            setMessage("Deleting book...");
+            _context4.next = 3;
             return fetch("/api/books/" + id, {
               method: "delete",
               headers: {
@@ -66576,12 +66612,24 @@ function Main() {
                 'Accept': 'application/json'
               }
             });
-          case 2:
+          case 3:
             res = _context4.sent;
-            if (res.status === 200) {
-              sendSortedSearchQuery();
+            _context4.next = 6;
+            return res.json();
+          case 6:
+            json = _context4.sent;
+            if (!(res.status === 200)) {
+              _context4.next = 12;
+              break;
             }
-          case 4:
+            _context4.next = 10;
+            return sendSortedSearchQuery();
+          case 10:
+            _context4.next = 13;
+            break;
+          case 12:
+            setMessage(json.message);
+          case 13:
           case "end":
             return _context4.stop();
         }
@@ -66589,23 +66637,101 @@ function Main() {
     }));
     return _handleDeleteBook.apply(this, arguments);
   }
-  function handleSearchChange(e) {
-    query.current = e.target.value;
-    sendSortedSearchQuery();
+  function handleSearchChange(_x3) {
+    return _handleSearchChange.apply(this, arguments);
   }
-  function handleSortChange(e) {
-    var val = e.target.value.split("-");
-    sortBy.current = val ? [val[0], val[1].toUpperCase()] : ["", ""];
-    sendSortedSearchQuery();
+  function _handleSearchChange() {
+    _handleSearchChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(e) {
+      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
+          case 0:
+            query.current = e.target.value;
+            _context5.next = 3;
+            return sendSortedSearchQuery();
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }, _callee5);
+    }));
+    return _handleSearchChange.apply(this, arguments);
+  }
+  function handleSortChange(_x4) {
+    return _handleSortChange.apply(this, arguments);
+  }
+  function _handleSortChange() {
+    _handleSortChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(e) {
+      var val;
+      return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+        while (1) switch (_context6.prev = _context6.next) {
+          case 0:
+            val = e.target.value.split("-");
+            sortBy.current = val ? [val[0], val[1].toUpperCase()] : ["", ""];
+            _context6.next = 4;
+            return sendSortedSearchQuery();
+          case 4:
+          case "end":
+            return _context6.stop();
+        }
+      }, _callee6);
+    }));
+    return _handleSortChange.apply(this, arguments);
+  }
+  function handleUpdateAuthor(_x5, _x6) {
+    return _handleUpdateAuthor.apply(this, arguments);
+  }
+  function _handleUpdateAuthor() {
+    _handleUpdateAuthor = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(id, value) {
+      var res, json;
+      return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+        while (1) switch (_context7.prev = _context7.next) {
+          case 0:
+            setMessage("Updating author...");
+            _context7.next = 3;
+            return fetch("/api/books/author", {
+              method: "put",
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                id: id,
+                new_author: value
+              })
+            });
+          case 3:
+            res = _context7.sent;
+            _context7.next = 6;
+            return res.json();
+          case 6:
+            json = _context7.sent;
+            if (!(res.status === 200)) {
+              _context7.next = 12;
+              break;
+            }
+            _context7.next = 10;
+            return sendSortedSearchQuery();
+          case 10:
+            _context7.next = 13;
+            break;
+          case 12:
+            setMessage(json.message);
+          case 13:
+          case "end":
+            return _context7.stop();
+        }
+      }, _callee7);
+    }));
+    return _handleUpdateAuthor.apply(this, arguments);
   }
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     id: "content-body"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AddItemContainer__WEBPACK_IMPORTED_MODULE_2__["default"], {
     handleAddBook: handleAddBook,
-    setAddWarning: setAddWarning
-  }), addWarning ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
-    id: "warning-add"
-  }, addWarning) : null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SearchContainer__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    setMessage: setMessage
+  }), message ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+    id: "message"
+  }, message) : null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SearchContainer__WEBPACK_IMPORTED_MODULE_3__["default"], {
     handleSearchChange: handleSearchChange,
     handleSortChange: handleSortChange
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
@@ -66618,9 +66744,10 @@ function Main() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_RowItem__WEBPACK_IMPORTED_MODULE_4__["default"], {
       key: b.title + "_" + i + "_" + b.author,
       book: b,
-      handleDeleteBook: handleDeleteBook
+      handleDeleteBook: handleDeleteBook,
+      handleUpdateAuthor: handleUpdateAuthor
     });
-  }) : query.current ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "No books matching \"", query.current, "\" found") : null)));
+  }) : query.current ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, "No books matching \"", query.current, "\" found")) : null)));
 }
 /* harmony default export */ __webpack_exports__["default"] = (Main);
 if (document.getElementById('root')) {
@@ -66642,13 +66769,53 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _sass_rowItem_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../sass/rowItem.scss */ "./resources/sass/rowItem.scss");
+/* harmony import */ var _sass_rowItem_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_sass_rowItem_scss__WEBPACK_IMPORTED_MODULE_2__);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 
 
 function RowItem(props) {
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {}, []);
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(props.book.author),
+    _useState2 = _slicedToArray(_useState, 2),
+    author = _useState2[0],
+    setAuthor = _useState2[1];
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    editMode = _useState4[0],
+    setEditMode = _useState4[1];
+  function handleEditMode(e) {
+    setEditMode(true);
+  }
+  function handleAuthorInput(e) {
+    setAuthor(e.target.value);
+  }
+  function handleUpdateAuthor() {
+    props.handleUpdateAuthor(props.book.id, author);
+    setEditMode(false);
+  }
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
     className: "row-item"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, props.book.title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, props.book.author), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, props.book.title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, editMode ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    className: "column-author"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    name: "edit-" + props.book.title + "_" + props.book.author,
+    defaultValue: props.book.author,
+    onChange: handleAuthorInput
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "change-button",
+    onClick: handleUpdateAuthor
+  }, "Save")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    className: "column-author"
+  }, props.book.author, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "change-button",
+    onClick: handleEditMode
+  }, "Edit"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     onClick: function onClick() {
       return props.handleDeleteBook(props.book.id);
     }
@@ -66680,6 +66847,7 @@ function SearchContainer(props) {
     name: "query",
     onChange: props.handleSearchChange
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("select", {
+    name: "sortBy",
     onChange: props.handleSortChange
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
     value: "none",
@@ -66748,6 +66916,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/src??ref--7-2!../../node_modules/sass-loader/dist/cjs.js??ref--7-3!./main.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./resources/sass/main.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./resources/sass/rowItem.scss":
+/*!*************************************!*\
+  !*** ./resources/sass/rowItem.scss ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/src??ref--7-2!../../node_modules/sass-loader/dist/cjs.js??ref--7-3!./rowItem.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./resources/sass/rowItem.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 

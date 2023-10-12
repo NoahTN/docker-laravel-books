@@ -4,7 +4,7 @@ import '../../sass/searchContainer.scss';
 function SearchContainer(props) {
     return <div id="search-container">
         <input name="query" onChange={props.handleSearchChange}/>
-        <select onChange={props.handleSortChange}>
+        <select name="sortBy" onChange={props.handleSortChange}>
             <option value="none" defaultValue>Sort by</option>
             <option value="title-asc">Title, ASC</option>
             <option value="title-desc">Title, DESC</option>

@@ -109,7 +109,8 @@ class BookController extends Controller
             'author' => 'required|max:255'
         ]);
 
-        if($validator->fails()) {
+        if($validator->fails()) 
+        {
             $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
             return response()->json([
                 'message' => $customError
@@ -119,24 +120,28 @@ class BookController extends Controller
         $existingBook = Book::where('title', $request->title)
                             ->where('author', $request->author)
                             ->first();
-        if(!$existingBook) {
+        if(!$existingBook) 
+        {
             $bookData = new Book();
             $bookData->title = $request->title;
             $bookData->author = $request->author;
             $bookData->save();
-            if($bookData->id > 0) {
+            if($bookData->id > 0) 
+            {
                 return response()->json([
                     'message' => 'Successfully added book',
                     'data' => $bookData
                 ], 200);
             }
-            else {
+            else 
+            {
                 return response()->json([
                     'message' => 'Failed to add book'
                 ], 400);
             }
         }
-        else {
+        else 
+        {
             return response()->json([
                 'message' => 'Failed to add book, "'. $request->title .'" by "'. $request->author .'" already exists'
             ], 409);
@@ -181,28 +186,46 @@ class BookController extends Controller
             'new_author' => 'required|max:255'
         ]);
 
-        if($validator->fails()) {
+        if($validator->fails()) 
+        {
             $customError = CommonHelper::customErrorResponse($validator->messages()->get("*"));
             return response()->json([
                 'message' => $customError
             ], 400);
         }
+        
+        $book = Book::find($request->id);
+        $existingBook = Book::where('title', $book->title)
+                            ->where('author', $request->new_author)
+                            ->where('id', '!=', $request->id)
+                            ->first();
 
-        $bookUpdated = Book::where('id', $request->id)
+        if(!$existingBook) 
+        {
+            $bookUpdated = Book::where('id', $request->id)
                             ->update(array('author' => $request->new_author));
 
-        if($bookUpdated) 
+            if($bookUpdated) 
+            {
+                return response()->json([
+                    'message' => 'Successfully updated book with id: ' . $request->id . ' to author: "' . $request->new_author . '"'
+                ], 200);
+            }  
+            else
+            {
+                return response()->json([
+                    'message' => 'Failed to update book with id: ' . $request->id
+                ], 400);
+            }
+        }
+        else 
         {
             return response()->json([
-                'message' => 'Successfully updated book with id: ' . $request->id . ' to author: "' . $request->new_author . '"'
-            ], 200);
-        }  
-        else
-        {
-            return response()->json([
-                'message' => 'Failed to update book with id: ' . $request->id
+                'message' => 'Failed to update book with id: ' . $request->id .', duplicate entry found'
             ], 400);
         }
+
+        
     }
 
 

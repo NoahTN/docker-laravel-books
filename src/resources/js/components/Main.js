@@ -9,14 +9,18 @@ function Main() {
     const [books, setBooks] = useState(null);
     const query = useRef("");
     const sortBy = useRef(["", ""]);
-    const [addWarning, setAddWarning] = useState("");
+    const [message, setMessage] = useState("Fetching books...");
 
     useEffect(() => {
         async function prepare() {
             let res = await fetch("/api/books");
+            let json = await res.json();
             if(res.status === 200) {
-                let json = await res.json();
-                setBooks(json.data ?? []);
+                setBooks(json?.data || []);
+                setMessage("");
+            }
+            else {
+                setMessage(res.message);
             }
         }
 
@@ -25,14 +29,22 @@ function Main() {
 
 
     async function sendSortedSearchQuery() {
+        let onlyMessage = false;
+        if(!message) {
+            setMessage("Fetching books...");
+            onlyMessage = true;
+        }
         let res = await fetch("/api/books/search?query=" + query.current + "&orderBy=" + sortBy.current[0] + "&order=" + sortBy.current[1]);
         let json = await res.json();
         setBooks(json?.data);
+
+        setMessage("");
     }
 
     async function handleAddBook(book) {
+        setMessage("Adding book...");
         let res = await fetch("/api/books/add", {
-            method: "POST",
+            method: "post",
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -41,14 +53,15 @@ function Main() {
         });
         let json = await res.json();
         if(res.status === 200) {
-            sendSortedSearchQuery();
+            await sendSortedSearchQuery();
         }
         else if(res.status >= 400) {
-            setAddWarning(json.message);
+            setMessage(json.message);
         }
     }
 
     async function handleDeleteBook(id) {
+        setMessage("Deleting book...");
         let res = await fetch("/api/books/" + id, {
             method: "delete",
             headers: {
@@ -56,26 +69,49 @@ function Main() {
                 'Accept': 'application/json',
             },
         });
+        let json = await res.json();
         if(res.status === 200) {
-            sendSortedSearchQuery();
+            await sendSortedSearchQuery();
+        }
+        else {
+            setMessage(json.message);
         }
     }
 
-    function handleSearchChange(e) {
+    async function handleSearchChange(e) {
        query.current = e.target.value;
-       sendSortedSearchQuery();
+       await sendSortedSearchQuery();
     }
 
-    function handleSortChange(e) {
+    async function handleSortChange(e) {
         let val = e.target.value.split("-");
         sortBy.current = val ? [val[0], val[1].toUpperCase()] : ["", ""];
-        sendSortedSearchQuery();
+        await sendSortedSearchQuery();
+    }
+
+    async function handleUpdateAuthor(id, value) {
+        setMessage("Updating author...");
+        let res = await fetch("/api/books/author", {
+            method: "put",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({id: id, new_author: value})
+        });
+        let json = await res.json();
+        if(res.status === 200) {
+            await sendSortedSearchQuery();
+        }
+        else {
+            setMessage(json.message);
+        }
     }
 
 
     return <div id="content-body">
-        <AddItemContainer handleAddBook={handleAddBook} setAddWarning={setAddWarning}/>
-        {addWarning ? <p id="warning-add">{addWarning}</p> : null}
+        <AddItemContainer handleAddBook={handleAddBook} setMessage={setMessage}/>
+        {message ? <p id="message">{message}</p> : null}
         <SearchContainer handleSearchChange={handleSearchChange} handleSortChange={handleSortChange} />
         <table>
             <thead>
@@ -87,8 +123,8 @@ function Main() {
             </thead>
             
             <tbody>
-                {books ? books.map((b, i) => <RowItem key={b.title+"_" + i + "_"+b.author} book={b} handleDeleteBook={handleDeleteBook} />) : (query.current ? 
-                    <div>No books matching "{query.current}" found</div>
+                {books ? books.map((b, i) => <RowItem key={b.title+"_" + i + "_"+b.author} book={b} handleDeleteBook={handleDeleteBook} handleUpdateAuthor={handleUpdateAuthor} />) : (query.current ? 
+                    <tr><td>No books matching "{query.current}" found</td></tr>
                 : null)}
             </tbody>
         </table>
