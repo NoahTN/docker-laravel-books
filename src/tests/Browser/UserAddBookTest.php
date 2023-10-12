@@ -28,6 +28,9 @@ class UserAddBookTest extends DuskTestCase
         });
     }
 
+    /**
+     * It succeeds in adding a book with an existing title but different author
+     */
     public function test_addBook_existingTitleDifferentAuthor_succeed() 
     {
         $this->browse(function ($browser) {
@@ -44,6 +47,9 @@ class UserAddBookTest extends DuskTestCase
         });
     }
 
+    /**
+     * It succeeds in adding a book with an existing author but different title
+     */
     public function test_addBook_differentTitleExistingAuthor_succeed() 
     {
         $this->browse(function ($browser) {
