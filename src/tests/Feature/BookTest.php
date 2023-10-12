@@ -323,6 +323,36 @@ class BookTest extends TestCase
             ]);
     }
 
+    /*
+     * It exports the list of books as an csv file
+     */
+    public function test_export_CSV()
+    {
+        $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers');
+        $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
+        $this->addBook('How To Draw Comics The Marvel Way', 'Stan Lee, John Buscema');
+
+        $response = $this->get('/api/books/export?format=csv&columns[]=title&columns[]=author');
+
+        $this->assertEquals('text/csv; charset=UTF-8', $response->headers->get('Content-Type'));
+        $this->assertEquals('attachment; filename="books.csv"', $response->headers->get('Content-Disposition'));
+    }
+
+    /*
+     * It exports the list of books as an xml file
+     */
+    public function test_export_XML()
+    {
+        $this->addBook('Japanese the Manga Way: An Illustrated Guide to Grammar and Structure', 'Wayne P. Lammers');
+        $this->addBook('Basic Human Anatomy: An Essential Visual Guide for Artists', 'Roberto Osti');
+        $this->addBook('How To Draw Comics The Marvel Way', 'Stan Lee, John Buscema');
+
+        $response = $this->get('/api/books/export?format=xml&columns[]=title&columns[]=author');
+
+        $this->assertEquals('text/xml; charset=UTF-8', $response->headers->get('Content-Type'));
+        $this->assertEquals('attachment; filename="books.xml"', $response->headers->get('Content-Disposition'));
+    }
+
     
 
 }

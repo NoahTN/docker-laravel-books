@@ -109,7 +109,7 @@ class UserSortsAndSearchesTest extends DuskTestCase
                     $row->assertSee("Yet Unread Book");
                 })
                 ->whenAvailable('.row-item:nth-child(2)', function ($row) {
-                    $row->assertSee("Test Book");
+                    $row->assertSee("Another Book");
                 })
                 ->assertMissing(".row-item:nth-child(3)");
          });

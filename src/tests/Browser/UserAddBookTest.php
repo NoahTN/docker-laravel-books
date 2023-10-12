@@ -21,6 +21,8 @@ class UserAddBookTest extends DuskTestCase
                 ->type("title", "Test Book")
                 ->type("author", "An Author")
                 ->press('Add Book')
+                ->waitForText("Fetching books...")
+                ->waitUntilMissingText("Fetching books...")
                 ->waitFor(".row-item")
                 ->press('Add Book')
                 ->waitFor("#warning-add")
@@ -38,9 +40,12 @@ class UserAddBookTest extends DuskTestCase
                     ->type("title", "Test Book")
                     ->type("author", "An Author")
                     ->press('Add Book')
-                    ->waitFor(".row-item")
+                    ->waitForText("Fetching books...")
+                    ->waitUntilMissingText("Fetching books...")
                     ->type("author", "Another Author")
                     ->press('Add Book')
+                    ->waitForText("Fetching books...")
+                    ->waitUntilMissingText("Fetching books...")
                     ->whenAvailable('tr:nth-child(2)', function ($row) {
                         $row->assertSee('Another Author');
                     });
@@ -57,9 +62,12 @@ class UserAddBookTest extends DuskTestCase
                     ->type("title", "Test Book")
                     ->type("author", "An Author")
                     ->press('Add Book')
-                    ->waitFor(".row-item")
+                    ->waitForText("Fetching books...")
+                    ->waitUntilMissingText("Fetching books...")
                     ->type("title", "Another Book")
                     ->press('Add Book')
+                    ->waitForText("Fetching books...")
+                    ->waitUntilMissingText("Fetching books...")
                     ->whenAvailable('tr:nth-child(2)', function ($row) {
                         $row->assertSee('Another Book');
                     });
